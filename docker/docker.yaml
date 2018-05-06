@@ -1,0 +1,47 @@
+--- # This is a structural YAML to install docker
+
+- hosts: "{{ hosts }}"
+  remote_user: "{{ user }}"
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: yes
+  tasks:
+  - name: Install HTTPS
+    apt:
+      name: "{{ item }}"
+      state: latest
+      update_cache: yes
+    with_items:
+     - apt-transport-https
+     - ca-certificates
+     - curl
+     - software-properties-common
+    register: result
+  - debug: var=result
+  - name: Add docker apt_key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+    register: result
+  - debug: var=result
+  - name: Add docker repository
+    apt_repository:
+      repo: "{{ repo }}"
+      state: present
+    register: result
+  - debug: var=result
+  - name: Install Docker
+    apt:
+      name: docker-ce
+      state: latest
+      update_cache: yes
+    register: result
+  - debug: var=result
+  - name: Adding user to docker group
+    user:
+      name: "{{ user }}"
+      groups: docker
+      append: yes
+    register: result
+  - debug: var=result
