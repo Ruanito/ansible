@@ -1,0 +1,30 @@
+--- # Install kubernetes
+
+- hosts: "{{ hosts }}"
+  remote_user: "{{ user }}"
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: yes
+  tasks:
+  - name: Add kubernetes key
+    apt_key: 
+      url: http://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+    register: result
+  - debug: var=result
+  - name: Add kubernetes repository
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+    register: result
+  - debug: var=result
+  - name: Install kubernetes
+    apt: 
+      name: "{{ item }}"
+      state: latest
+      update_cache: yes
+    with_items:
+      - kubelet
+      - kubeadm
+      - kubectl
