@@ -27,7 +27,7 @@
   - debug: var=result
   - name: Add docker repository
     apt_repository:
-      repo: "{{ repo }}"
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
       state: present
     register: result
   - debug: var=result
